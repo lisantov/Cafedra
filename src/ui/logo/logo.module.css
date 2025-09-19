@@ -1,0 +1,11 @@
+.logo {
+    width: 10rem;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.logo:hover {
+    opacity: 0.9;
+}

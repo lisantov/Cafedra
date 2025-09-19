@@ -1,0 +1,12 @@
+@import url("./styles/variables.css");
+@import url("./styles/fonts.css");
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #121212;
+}

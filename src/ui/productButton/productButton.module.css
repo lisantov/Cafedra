@@ -1,0 +1,25 @@
+.productButton {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 24px;
+    color: var(--accent-color);
+    font-weight: var(--regular-weight);
+    font-size: 1rem;
+    background-color: transparent;
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.productButton:hover {
+    opacity: 0.9;
+}
+
+.productButton:active {
+    opacity: 0.8;
+}

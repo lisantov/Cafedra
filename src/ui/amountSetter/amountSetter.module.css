@@ -1,0 +1,25 @@
+.setterContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+.setterInput {
+    appearance: none;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--accent-color);
+    color: var(--text-color);
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: var(--regular-weight);
+    border-radius: var(--border-radius);
+}
+
+.setterInput::-webkit-outer-spin-button,
+.setterInput::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

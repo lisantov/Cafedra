@@ -1,0 +1,20 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 25px 80px;
+    background-color: var(--header-color);
+    box-shadow: 0 0 30px var(--header-color);
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}

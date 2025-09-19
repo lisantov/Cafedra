@@ -1,0 +1,14 @@
+:root {
+    --font: roboto, sans-serif;
+    --header-color: #1a1a1a;
+    --image-background: #212121;
+    --input-background: #212121;
+    --input-border: 1px solid #292929;
+    --accent-color: #6155F5;
+    --text-color: #FFFFFF;
+    --error-color: #FF3B3B;
+    --bold-weight: 700;
+    --regular-weight: 400;
+    --light-weight: 300;
+    --border-radius: 12px;
+}
