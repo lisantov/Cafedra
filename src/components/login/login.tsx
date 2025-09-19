@@ -1,20 +1,30 @@
 import clsx from "clsx";
-import styles from './login.module.css';
-import {Input} from "../../ui/input";
-import {useState} from "react";
-import {validateEmail, validatePassword} from "../../utilities/validation.ts";
-import {Button} from "../../ui/button";
+import styles from "./login.module.css";
+
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import { type SyntheticEvent, useRef, useState } from "react";
+import { validateEmail, validatePassword } from "../../utilities/validation.ts";
+import type { TLoginData } from "../../utilities/types.ts";
 
 type Login = {
     email: string;
     password: string;
 }
 
-export const Login = () => {
+interface LoginProps {
+    onLogin: (data: TLoginData) =>  string | null
+}
+
+export const Login = ({
+    onLogin
+}:LoginProps) => {
     const [isFormValid, setIsFormValid] = useState<{[key in keyof Login]: boolean}>({
         email: false,
         password: false,
     });
+
+    const errorText = useRef<HTMLSpanElement | null>(null);
 
     const [userInfo, setUserInfo] = useState<Login>({
         email: '',
@@ -35,8 +45,17 @@ export const Login = () => {
         });
     }
 
+    const handleSubmit = (event: SyntheticEvent) => {
+        event.preventDefault();
+        const error = onLogin({
+            email: userInfo.email,
+            password: userInfo.password,
+        });
+        if(errorText.current) errorText.current.textContent = error;
+    }
+
     return (
-        <form className={clsx(styles.form)}>
+        <form className={clsx(styles.form)} onSubmit={handleSubmit}>
             <Input
                 type='email'
                 onInput={handleInput('email')}
@@ -62,6 +81,7 @@ export const Login = () => {
             <Button type='submit' isPrimary isDisabled={!(isFormValid.email && isFormValid.password)}>
                 Войти
             </Button>
+            <span ref={errorText} className={clsx(styles.errorText)}></span>
         </form>
     )
 }

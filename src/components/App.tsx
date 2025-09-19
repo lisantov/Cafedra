@@ -10,15 +10,49 @@ import { Product } from "../ui/product";
 import { ProductButton } from "../ui/productButton";
 import { Logo } from '../ui/logo';
 
-import type {TError, TRegistrationData, TRegistrationSuccess} from "../utilities/types.ts";
-import { useState } from "react";
-import { serverUrl } from "../utilities/constants.ts";
-import { setToken } from "../utilities/token.ts";
+import type {
+    TError,
+    TLoginData,
+    TLoginSuccess,
+    TProduct, TProducts,
+    TRegistrationData,
+} from "../utilities/types.ts";
+import { useEffect, useState } from "react";
+import { getToken, isExpired, removeToken, setToken } from "../utilities/token.ts";
+import { getProducts, loginUser, logout, registerUser, setProduct } from "../utilities/api.ts";
+import { hostName } from "../utilities/constants.ts";
 
 function App() {
     const [isLogged, setIsLogged] = useState<boolean>(false);
     const [isRegistering, setIsRegistering] = useState<boolean>(false);
     const [isLogging, setIsLogging] = useState<boolean>(false);
+    const [products, setProducts] = useState<TProduct[]>([]);
+
+    const handleProductButton = (id: string, method: 'POST' | 'DELETE') => () => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            setProduct(id, token, method)
+        }
+    }
+
+    const productsComponents = products.map((product, index) => {
+        return (
+            <Product
+                productTitle={product.name}
+                productImageUrl={hostName+'/'+product.image}
+                productDescription={product.description}
+                productPrice={product.price}
+                key={index}
+            >
+                {isLogged &&
+                    <ProductButton
+                        onAdd={handleProductButton(product.id, 'POST')}
+                        onRemove={handleProductButton(product.id, 'DELETE')}
+                    />
+                }
+            </Product>
+        )
+    })
 
     const handleLogo = () => {
         if(isRegistering) setIsRegistering(false);
@@ -35,18 +69,30 @@ function App() {
         if(!isLogging) setIsLogging(true);
     }
 
+    const isCurrentTokenExpired = (): boolean => {
+        const token = getToken();
+        if(token) return isExpired(token.timeStamp);
+        return true;
+    }
+
+    useEffect(() => {
+        getProducts()
+            .then((data: TProducts) => {
+                setProducts(data.data);
+            })
+            .catch((error: TError) => {
+                console.error(`${error.code}: ${error.message}`);
+            });
+        if(!isCurrentTokenExpired()) {
+            setIsLogged(true);
+        }
+    }, []);
+
     const handleRegistration = (data: TRegistrationData): string | null => {
         let errorMessage = null;
-        console.log(data);
-        fetch(`${serverUrl}/signup`, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        })
-            .then((response) => {
-                if(response.ok) return response.json();
-            })
-            .then((data: TRegistrationSuccess) => {
-                setToken(data.user_token);
+        registerUser(data)
+            .then((data: TLoginSuccess) => {
+                setToken(data.data.user_token);
                 setIsLogged(true);
                 setIsRegistering(false);
             })
@@ -57,6 +103,32 @@ function App() {
         return errorMessage;
     }
 
+    const handleLogin = (data: TLoginData): string | null => {
+        let errorMessage = null;
+        loginUser(data)
+            .then((data: TLoginSuccess) => {
+                setToken(data.data.user_token);
+                setIsLogged(true);
+                setIsLogging(false);
+            })
+            .catch((error: TError) => {
+                console.error(`${error.code}: ${error.message}`);
+                errorMessage = error.message;
+            })
+        return errorMessage;
+    }
+
+    const handleLogout = () => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            logout(token)
+                .then(() => {
+                    removeToken();
+                    setIsLogged(false);
+                })
+        }
+    }
+
     return (
     <>
         <Header logo={<Logo onClick={handleLogo} />}>
@@ -64,7 +136,7 @@ function App() {
                 <>
                     <Button isPrimary >Оформленные заказы</Button>
                     <Button isPrimary >Корзина</Button>
-                    <Button >Выйти</Button>
+                    <Button onClick={handleLogout} >Выйти</Button>
                 </>
             ) : (
                 <>
@@ -82,28 +154,11 @@ function App() {
             ) : isLogging ? (
                 <>
                     <Title>Вход в аккаунт</Title>
-                    <Login />
+                    <Login onLogin={handleLogin} />
                 </>
             ) : (
                 <Catalog>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
-                    <Product productTitle="Имба" productDescription="Лучшая в мире" productPrice={100}>
-                        { isLogged && <ProductButton />}
-                    </Product>
+                    {productsComponents}
                 </Catalog>
             )}
         </Main>

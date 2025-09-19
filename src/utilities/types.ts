@@ -4,8 +4,31 @@ export type TRegistrationData = {
     password: string;
 };
 
-export type TRegistrationSuccess = {
-    user_token: string;
+export type TLoginData = {
+    email: string;
+    password: string;
+};
+
+export type TProduct = {
+    id: string;
+    name: string;
+    image: string;
+    description: string;
+    price: number;
+};
+
+export type TProducts = {
+    data: TProduct[];
+}
+
+export type TSuccessMessage = {
+    message: string;
+}
+
+export type TLoginSuccess = {
+    data: {
+        user_token: string;
+    }
 };
 
 export type TError = {

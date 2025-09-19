@@ -13,7 +13,7 @@
     height: 20rem;
     border-radius: var(--border-radius);
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-color: var(--image-background);
 }
