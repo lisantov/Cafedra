@@ -10,3 +10,8 @@
 body {
     background-color: #121212;
 }
+
+#react-modals {
+    position: relative;
+    z-index: 5;
+}

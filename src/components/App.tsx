@@ -21,6 +21,8 @@ import { useEffect, useState } from "react";
 import { getToken, isExpired, removeToken, setToken } from "../utilities/token.ts";
 import { getProducts, loginUser, logout, registerUser, setProduct } from "../utilities/api.ts";
 import { hostName } from "../utilities/constants.ts";
+import { Cart } from "./cart/cart.tsx";
+import {ModalButton} from "../ui/modalButton";
 
 function App() {
     const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -134,7 +136,12 @@ function App() {
         <Header logo={<Logo onClick={handleLogo} />}>
             {isLogged ? (
                 <>
-                    <Button isPrimary >Оформленные заказы</Button>
+                    <ModalButton
+                        modalRootId='react-modals'
+                        isPrimary
+                    >
+                        Оформленные заказы
+                    </ModalButton>
                     <Button isPrimary >Корзина</Button>
                     <Button onClick={handleLogout} >Выйти</Button>
                 </>
@@ -162,6 +169,8 @@ function App() {
                 </Catalog>
             )}
         </Main>
+        <div id='react-modals'>
+        </div>
     </>
     )
 }

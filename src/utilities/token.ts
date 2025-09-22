@@ -13,7 +13,6 @@ export const isExpired = (timeStamp?: number): boolean => {
 }
 
 export const setToken = (access_token: string) => {
-    console.log(access_token);
     localStorage.setItem(
         TOKEN_KEY,
         JSON.stringify({
