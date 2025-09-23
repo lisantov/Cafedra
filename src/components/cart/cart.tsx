@@ -1,20 +1,77 @@
 import clsx from "clsx";
 import styles from './cart.module.css';
-import {useState, useEffect, useRef} from "react";
-import type { TProduct } from "../../utilities/types.ts";
+import {useCallback, useEffect, useRef, useState} from "react";
+import type {TCartProduct, TProducts} from "../../utilities/types.ts";
+import { CartProduct } from "../../ui/cartProduct";
+import { getToken, isCurrentTokenExpired } from "../../utilities/token.ts";
+import { getCart, setProduct } from "../../utilities/api.ts";
 
 interface CartProps {
-    close: () => void;
+    close?: () => void;
 }
 
 export const Cart = ({
-    close
+    close = () => {}
 }: CartProps) => {
-    const [products, setProducts] = useState<TProduct[]>([]);
-    const productsComponent = products.map((product, index) => {
-        return
-    })
     const cartWrap = useRef<HTMLDivElement | null>(null);
+    const [cart, setCart] = useState<TCartProduct[]>([]);
+
+    const increaseProduct = useCallback((id: string) => {
+        addProduct(id);
+
+        setCart((cart) => {
+            return cart.map(prod => {
+                if(prod.id === id) {
+                    const newAmount = prod.amount + 1;
+
+                    return {
+                        ...prod,
+                        amount: newAmount,
+                        totalPrice: prod.price * newAmount
+                    }
+                }
+                return prod;
+            })
+        })
+    }, []);
+
+    const decreaseProduct = useCallback((id: string) => {
+        removeProduct(id);
+
+        setCart((cart) => {
+            return cart.map(prod => {
+                if(prod.id === id && prod.amount > 1) {
+                    const newAmount = prod.amount - 1;
+
+                    return {
+                        ...prod,
+                        amount: newAmount,
+                        totalPrice: prod.price * newAmount
+                    }
+                }
+                return prod;
+            })
+        })
+    }, []);
+
+    const deleteProduct = useCallback((id: string) => {
+        console.log(id);
+        const product = cart.filter()
+
+        if (product) {
+            for (let i = 0; i < product.amount; i++) {
+                removeProduct(id);
+            }
+        }
+
+        setCart((cart) => {
+            return cart.filter(prod => prod.id !== id);
+        })
+    }, []);
+
+    const products = cart.map(prod => {
+       return <CartProduct decreaseProduct={decreaseProduct} increaseProduct={increaseProduct} deleteProduct={deleteProduct} product={prod} key={prod.id} />
+    });
 
     const handleClose = () => {
         if(cartWrap.current) {
@@ -23,7 +80,56 @@ export const Cart = ({
         }
     }
 
+    const actualizeProducts = () => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            getCart(token)
+                .then((data: TProducts) => {
+                    const groupedProducts = data.data.reduce((grouped: TCartProduct[], product) => {
+                        const existingProductIndex = grouped.findIndex(p => {
+                            return p.id === product.product_id
+                        });
+
+                        if (existingProductIndex !== -1) {
+                            const existingProduct = grouped[existingProductIndex];
+                            existingProduct.amount += 1;
+                            existingProduct.totalPrice = existingProduct.price * existingProduct.amount;
+                        } else {
+                            grouped.push({
+                                id: product.product_id,
+                                name: product.name,
+                                description: product.description,
+                                image: product.image,
+                                price: product.price,
+                                amount: 1,
+                                totalPrice: product.price
+                            });
+                        }
+
+                        return grouped;
+                    }, []);
+
+                    setCart(groupedProducts);
+                })
+        }
+    }
+
+    const removeProduct = (id: string) => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            setProduct(id, token, 'DELETE');
+        }
+    }
+
+    const addProduct = (id: string) => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            setProduct(id, token, 'POST');
+        }
+    }
+
     useEffect(() => {
+        actualizeProducts();
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') handleClose();
         }
@@ -42,7 +148,7 @@ export const Cart = ({
                         <span className={clsx(styles.cartText)}>Корзина пуста</span>
                     ) : (
                         <div className={clsx(styles.productContainer)}>
-                            {productsComponent}
+                            {products}
                         </div>
                     )}
                 </div>

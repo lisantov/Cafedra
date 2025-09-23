@@ -1,4 +1,4 @@
-import type {TStoredToken} from "./types.ts";
+import type { TStoredToken } from "./types.ts";
 
 const TOKEN_KEY = import.meta.env.VITE_TOKEN_KEY;
 const TOKEN_TTL_MS = Number(import.meta.env.VITE_TOKEN_TTL_MS);
@@ -10,6 +10,12 @@ export const isExpired = (timeStamp?: number): boolean => {
     const diff = now - timeStamp;
 
     return diff > TOKEN_TTL_MS;
+}
+
+export const isCurrentTokenExpired = (): boolean => {
+    const token = getToken();
+    if(token) return isExpired(token.timeStamp);
+    return true;
 }
 
 export const setToken = (access_token: string) => {

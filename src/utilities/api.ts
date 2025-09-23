@@ -81,3 +81,17 @@ export const setProduct = (productId: string, userToken: string, method: 'POST' 
             console.error(`${error.code}: ${error.message}`);
         })
 };
+
+export const getCart = (userToken: string): Promise<TProducts> => {
+    return fetch(`${serverUrl}/cart`, {
+        headers: {
+            'Authorization': `Bearer ${userToken}`
+        }
+    })
+        .then((response) => {
+            if(response.ok) return response.json();
+        })
+        .catch((error: TError) => {
+            console.error(`${error.code}: ${error.message}`);
+        })
+}

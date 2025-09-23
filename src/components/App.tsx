@@ -18,17 +18,18 @@ import type {
     TRegistrationData,
 } from "../utilities/types.ts";
 import { useEffect, useState } from "react";
-import { getToken, isExpired, removeToken, setToken } from "../utilities/token.ts";
+import { getToken, isCurrentTokenExpired, removeToken, setToken } from "../utilities/token.ts";
 import { getProducts, loginUser, logout, registerUser, setProduct } from "../utilities/api.ts";
 import { hostName } from "../utilities/constants.ts";
+import { ModalButton } from "../ui/modalButton";
 import { Cart } from "./cart/cart.tsx";
-import {ModalButton} from "../ui/modalButton";
 
 function App() {
     const [isLogged, setIsLogged] = useState<boolean>(false);
     const [isRegistering, setIsRegistering] = useState<boolean>(false);
     const [isLogging, setIsLogging] = useState<boolean>(false);
     const [products, setProducts] = useState<TProduct[]>([]);
+    const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
 
     const handleProductButton = (id: string, method: 'POST' | 'DELETE') => () => {
         if(!isCurrentTokenExpired()) {
@@ -37,14 +38,14 @@ function App() {
         }
     }
 
-    const productsComponents = products.map((product, index) => {
+    const productsComponents = products.map((product) => {
         return (
             <Product
                 productTitle={product.name}
                 productImageUrl={hostName+'/'+product.image}
                 productDescription={product.description}
                 productPrice={product.price}
-                key={index}
+                key={product.id}
             >
                 {isLogged &&
                     <ProductButton
@@ -69,12 +70,6 @@ function App() {
     const handleLoginButton = () => {
         if(isRegistering) setIsRegistering(false);
         if(!isLogging) setIsLogging(true);
-    }
-
-    const isCurrentTokenExpired = (): boolean => {
-        const token = getToken();
-        if(token) return isExpired(token.timeStamp);
-        return true;
     }
 
     useEffect(() => {
@@ -136,13 +131,10 @@ function App() {
         <Header logo={<Logo onClick={handleLogo} />}>
             {isLogged ? (
                 <>
-                    <ModalButton
-                        modalRootId='react-modals'
-                        isPrimary
-                    >
-                        Оформленные заказы
+                    <Button isPrimary >Оформленные заказы</Button>
+                    <ModalButton setIsOpen={setIsCartOpen} isOpen={isCartOpen} modalRootId='react-modals' buttonText='Корзина' isPrimary>
+                        <Cart close={() => setIsCartOpen(false)} />
                     </ModalButton>
-                    <Button isPrimary >Корзина</Button>
                     <Button onClick={handleLogout} >Выйти</Button>
                 </>
             ) : (

@@ -17,8 +17,12 @@ export type TProduct = {
     price: number;
 };
 
+export type TCartAnswerProduct = TProduct & {
+    product_id: string;
+}
+
 export type TProducts = {
-    data: TProduct[];
+    data: TCartAnswerProduct[];
 }
 
 export type TSuccessMessage = {
@@ -41,3 +45,8 @@ export type TStoredToken = {
     value: string;
     timeStamp: number;
 };
+
+export type TCartProduct = TProduct & {
+    amount: number;
+    totalPrice: number;
+}

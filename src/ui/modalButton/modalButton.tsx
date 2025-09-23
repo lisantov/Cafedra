@@ -2,36 +2,43 @@ import clsx from "clsx";
 import styles from './modalButton.module.css';
 import { type ReactNode, useState} from "react";
 import ReactDOM from "react-dom";
-import {Cart} from "../../components/cart/cart.tsx";
 
 interface ButtonProps {
+    isOpen: boolean;
+    setIsOpen: (val: boolean) =>  void;
     isPrimary?: boolean;
-    children?: ReactNode;
-    modalRootId: string;
+    buttonText?: string;
+    onClick?: () => void;
+    children: ReactNode;
+    modalRootId?: string;
 }
 
 export const ModalButton = ({
+    buttonText = 'Кнопка',
+    isOpen,
+    setIsOpen,
     isPrimary = false,
+    onClick = () => {},
     children,
     modalRootId
 }: ButtonProps) => {
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const modalRoot = document.querySelector(`#${modalRootId}`)
 
     const showModal = () => {
-        setIsModalOpen(true);
+        setIsOpen(true);
     }
 
-    const hideModal = () => {
-        setIsModalOpen(false);
+    const handleClick = () => {
+        showModal();
+        onClick();
     }
 
     return (
         <>
-            <button onClick={showModal} className={clsx(styles.button, isPrimary && styles.buttonPrimary)}>
-                {children}
+            <button onClick={handleClick} className={clsx(styles.button, isPrimary && styles.buttonPrimary)}>
+                {buttonText}
             </button>
-            {isModalOpen && ReactDOM.createPortal((<Cart close={hideModal}/>), modalRoot!)}
+            {isOpen && ReactDOM.createPortal(children, modalRoot!)}
         </>
     )
 }
