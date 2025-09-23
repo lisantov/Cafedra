@@ -102,7 +102,8 @@ export const Cart = ({
                                 image: product.image,
                                 price: product.price,
                                 amount: 1,
-                                totalPrice: product.price
+                                totalPrice: product.price,
+                                cart_id: product.id
                             });
                         }
 

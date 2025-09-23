@@ -19,11 +19,11 @@ export const CartProduct = ({
     increaseProduct,
     decreaseProduct
 }: ProductProps) => {
-    const { image, name, amount, totalPrice, id } = product;
+    const { image, name, amount, totalPrice, id, cart_id } = product;
 
     const handleDelete = (e: SyntheticEvent) => {
         e.stopPropagation();
-        deleteProduct(id);
+        deleteProduct(cart_id);
     }
 
     const increase = (e: SyntheticEvent) => {
@@ -33,7 +33,7 @@ export const CartProduct = ({
 
     const decrease = (e: SyntheticEvent) => {
         e.stopPropagation();
-        decreaseProduct(id);
+        decreaseProduct(cart_id);
     }
 
     return (
