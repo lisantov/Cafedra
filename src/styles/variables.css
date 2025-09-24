@@ -5,6 +5,8 @@
     --input-background: #212121;
     --input-border: 1px solid #292929;
     --accent-color: #6155F5;
+    --disabled-button-background: #2b2b2b;
+    --disabled-border-color: #3c3c3c;
     --text-color: #FFFFFF;
     --error-color: #FF3B3B;
     --bold-weight: 700;

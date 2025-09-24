@@ -1,6 +1,5 @@
 import type {
     TRegistrationData,
-    TLoginSuccess,
     TLoginData,
     TSuccessMessage,
     TProducts,
@@ -20,7 +19,7 @@ export const getProducts = (): Promise<TProducts> => {
         })
 }
 
-export const registerUser = (data: TRegistrationData): Promise<TLoginSuccess> => {
+export const registerUser = (data: TRegistrationData): Promise<Response> => {
     return fetch(`${serverUrl}/signup`, {
         headers: {
             'Content-type': 'application/json'
@@ -28,15 +27,9 @@ export const registerUser = (data: TRegistrationData): Promise<TLoginSuccess> =>
         method: 'POST',
         body: JSON.stringify(data)
     })
-        .then((response) => {
-            if(response.ok) return response.json();
-        })
-        .catch((error: TError) => {
-            console.error(`${error.code}: ${error.message}`);
-        })
 };
 
-export const loginUser = (data: TLoginData): Promise<TLoginSuccess> => {
+export const loginUser = (data: TLoginData): Promise<Response> => {
     return fetch(`${serverUrl}/login`, {
         headers: {
             'Content-type': 'application/json'
@@ -44,12 +37,6 @@ export const loginUser = (data: TLoginData): Promise<TLoginSuccess> => {
         method: 'POST',
         body: JSON.stringify(data)
     })
-        .then((response) => {
-            if(response.ok) return response.json();
-        })
-        .catch((error: TError) => {
-            console.error(`${error.code}: ${error.message}`);
-        })
 };
 
 export const logout = (userToken: string): Promise<TSuccessMessage> => {

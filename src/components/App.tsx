@@ -10,16 +10,10 @@ import { Product } from "../ui/product";
 import { ProductButton } from "../ui/productButton";
 import { Logo } from '../ui/logo';
 
-import type {
-    TError,
-    TLoginData,
-    TLoginSuccess,
-    TProduct, TProducts,
-    TRegistrationData,
-} from "../utilities/types.ts";
+import type { TError, TProduct, TProducts, } from "../utilities/types.ts";
 import { useEffect, useState } from "react";
-import { getToken, isCurrentTokenExpired, removeToken, setToken } from "../utilities/token.ts";
-import { getProducts, loginUser, logout, registerUser, setProduct } from "../utilities/api.ts";
+import { getToken, isCurrentTokenExpired, removeToken } from "../utilities/token.ts";
+import { getProducts, logout, setProduct } from "../utilities/api.ts";
 import { hostName } from "../utilities/constants.ts";
 import { ModalButton } from "../ui/modalButton";
 import { Cart } from "./cart/cart.tsx";
@@ -50,7 +44,6 @@ function App() {
                 {isLogged &&
                     <ProductButton
                         onAdd={handleProductButton(product.id, 'POST')}
-                        onRemove={handleProductButton(product.id, 'DELETE')}
                     />
                 }
             </Product>
@@ -85,34 +78,14 @@ function App() {
         }
     }, []);
 
-    const handleRegistration = (data: TRegistrationData): string | null => {
-        let errorMessage = null;
-        registerUser(data)
-            .then((data: TLoginSuccess) => {
-                setToken(data.data.user_token);
-                setIsLogged(true);
-                setIsRegistering(false);
-            })
-            .catch((error: TError) => {
-                console.error(`${error.code}: ${error.message}`);
-                errorMessage = error.message;
-            })
-        return errorMessage;
+    const handleRegistration = () => {
+        setIsLogged(true);
+        setIsRegistering(false);
     }
 
-    const handleLogin = (data: TLoginData): string | null => {
-        let errorMessage = null;
-        loginUser(data)
-            .then((data: TLoginSuccess) => {
-                setToken(data.data.user_token);
-                setIsLogged(true);
-                setIsLogging(false);
-            })
-            .catch((error: TError) => {
-                console.error(`${error.code}: ${error.message}`);
-                errorMessage = error.message;
-            })
-        return errorMessage;
+    const handleLogin = () => {
+        setIsLogged(true);
+        setIsLogging(false);
     }
 
     const handleLogout = () => {

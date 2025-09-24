@@ -5,3 +5,8 @@
     justify-content: center;
     gap: 25px;
 }
+
+.errorText {
+    color: var(--error-color);
+    font-size: 0.8rem;
+}

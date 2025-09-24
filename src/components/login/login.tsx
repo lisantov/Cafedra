@@ -5,7 +5,9 @@ import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { type SyntheticEvent, useRef, useState } from "react";
 import { validateEmail, validatePassword } from "../../utilities/validation.ts";
-import type { TLoginData } from "../../utilities/types.ts";
+import type { TError, TLoginData, TLoginSuccess } from "../../utilities/types.ts";
+import { setToken } from "../../utilities/token.ts";
+import { loginUser } from "../../utilities/api.ts";
 
 type Login = {
     email: string;
@@ -13,7 +15,7 @@ type Login = {
 }
 
 interface LoginProps {
-    onLogin: (data: TLoginData) =>  string | null
+    onLogin: () => void;
 }
 
 export const Login = ({
@@ -47,11 +49,43 @@ export const Login = ({
 
     const handleSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
-        const error = onLogin({
+        handleLogin({
             email: userInfo.email,
             password: userInfo.password,
         });
-        if(errorText.current) errorText.current.textContent = error;
+    }
+
+    const handleLogin = (data: TLoginData) => {
+        loginUser(data)
+            .then((resp): Promise<TLoginSuccess> => {
+                if(resp.ok) return resp.json()
+                else throw resp;
+            })
+            .then((data: TLoginSuccess) => {
+                if(errorText.current) errorText.current.textContent = '';
+                setToken(data.data.user_token);
+                onLogin();
+            })
+            .catch(async (error) => {
+                if(errorText.current) errorText.current.textContent = '';
+
+                try {
+                    const errorData: TError = await error.json();
+                    console.error('Ошибка при авторизации:', errorData);
+
+                    if(errorData) {
+                        if(errorText.current) {
+                            errorText.current.textContent =  'Ошибка при авторизации: Неправильный логин или пароль';
+                        }
+                    } else {
+                        if(errorText.current) errorText.current.textContent = 'Ошибка при авторизации';
+                    }
+                }
+                catch (parseError) {
+                    console.error('Ошибка при обработке ответа:', parseError);
+                    if (errorText.current) errorText.current.textContent = 'Ошибка при авторизации';
+                }
+            })
     }
 
     return (

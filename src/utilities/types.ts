@@ -38,7 +38,7 @@ export type TLoginSuccess = {
 export type TError = {
     code: number;
     message: string
-    errors: Record<string, string>
+    errors?: Record<string, string[]>[];
 };
 
 export type TStoredToken = {

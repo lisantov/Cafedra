@@ -5,12 +5,23 @@ export type TValidation = {
 
 export const defaultValidate = (value: string): TValidation => {
     const regex = /^[A-Za-zА-Яа-яЁё\s]+$/;
-    return regex.test(value) ? {
-        isValid: true,
-        errorText: ''
-    } : {
-        isValid: false,
-        errorText: 'Введён недопустимый символ'
+    if(regex.test(value) && value.length > 0) {
+        return {
+            isValid: true,
+            errorText: ''
+        }
+    }
+    else if(value.length > 0) {
+        return  {
+            isValid: false,
+            errorText: 'Введён недопустимый символ'
+        }
+    }
+    else {
+        return  {
+            isValid: false,
+            errorText: 'Поле не может быть пустым'
+        }
     }
 }
 

@@ -4,7 +4,10 @@ import {Input} from "../../ui/input";
 import {type SyntheticEvent, useRef, useState} from "react";
 import {validateEmail, validatePassword} from "../../utilities/validation.ts";
 import {Button} from "../../ui/button";
-import type { TRegistrationData } from "../../utilities/types.ts";
+import type {TError, TLoginSuccess, TRegistrationData} from "../../utilities/types.ts";
+import {registerUser} from "../../utilities/api.ts";
+import {setToken} from "../../utilities/token.ts";
+import type {InputRef} from "../../ui/input/input.tsx";
 
 type Registration = {
     name: string;
@@ -15,12 +18,26 @@ type Registration = {
 }
 
 interface RegistrationProps {
-    onRegister: (data: TRegistrationData) => string | null;
+    onRegister: () => void;
 }
 
 export const Registration = ({
     onRegister
 }: RegistrationProps) => {
+    const emailFieldRef = useRef<InputRef | null>(null);
+    const passwordFieldRef = useRef<InputRef | null>(null);
+    const nameFieldRef = useRef<InputRef | null>(null);
+    const secNameFieldRef = useRef<InputRef | null>(null);
+    const patronymFieldRef = useRef<InputRef | null>(null);
+
+    const fields = [
+        {ref: secNameFieldRef, name: 'secName'},
+        {ref: nameFieldRef, name: 'name'},
+        {ref: patronymFieldRef, name: 'patronym'},
+        {ref: emailFieldRef, name: 'email'},
+        {ref: passwordFieldRef, name: 'password'}
+    ];
+
     const [isFormValid, setIsFormValid] = useState<{[key in keyof Registration]: boolean}>({
         name: false,
         secName: false,
@@ -55,12 +72,54 @@ export const Registration = ({
 
     const handleSubmit = (event: SyntheticEvent) => {
         event.preventDefault();
-        const error = onRegister({
+        handleRegistration({
             fio: `${userInfo.secName} ${userInfo.name} ${userInfo.patronym}`,
             email: userInfo.email,
             password: userInfo.password,
         });
-        if(errorText.current) errorText.current.textContent = error;
+    }
+
+    const handleRegistration = (data: TRegistrationData) => {
+        registerUser(data)
+            .then((resp): Promise<TLoginSuccess> => {
+                if(resp.ok) return resp.json()
+                else throw resp;
+            })
+            .then((data: TLoginSuccess) => {
+                if(errorText.current) errorText.current.textContent = '';
+                setToken(data.data.user_token);
+                onRegister();
+            })
+            .catch(async (error) => {
+                if(errorText.current) errorText.current.textContent = '';
+
+                try {
+                    const errorData: TError = await error.json();
+                    console.error('Ошибка при регистрации:', errorData);
+
+                    if(errorData && errorData.errors) {
+                        const fieldErrors = errorData.errors;
+
+                        fieldErrors.forEach(errorFieldResp => {
+                            fields.forEach(({ref, name}) => {
+                                if(ref.current && errorFieldResp[name]) {
+                                    ref.current.setError(errorFieldResp[name][0]);
+                                }
+                            });
+                        })
+
+                        if(errorText.current) {
+                            errorText.current.textContent = errorData.message || 'Ошибка при регистрации';
+                        }
+                    } else {
+                        if(errorText.current) errorText.current.textContent = 'Ошибка при регистрации';
+                    }
+                }
+                catch (parseError) {
+                    console.error('Ошибка при обработке ответа:', parseError);
+                    if (errorText.current) errorText.current.textContent = 'Ошибка при регистрации';
+                }
+            })
     }
 
     return (
@@ -73,6 +132,7 @@ export const Registration = ({
                 placeholder="Иванов"
                 isRequired
                 onValidation={handleValidation('secName')}
+                ref={secNameFieldRef}
             />
             <Input
                 onInput={handleInput('name')}
@@ -82,6 +142,7 @@ export const Registration = ({
                 placeholder="Иван"
                 isRequired
                 onValidation={handleValidation('name')}
+                ref={nameFieldRef}
             />
             <Input
                 onInput={handleInput('patronym')}
@@ -91,6 +152,7 @@ export const Registration = ({
                 placeholder="Иванович"
                 isRequired
                 onValidation={handleValidation('patronym')}
+                ref={patronymFieldRef}
             />
             <Input
                 type='email'
@@ -102,6 +164,7 @@ export const Registration = ({
                 isRequired
                 validate={validateEmail}
                 onValidation={handleValidation('email')}
+                ref={emailFieldRef}
             />
             <Input
                 type='password'
@@ -113,6 +176,7 @@ export const Registration = ({
                 isRequired
                 validate={validatePassword}
                 onValidation={handleValidation('password')}
+                ref={passwordFieldRef}
             />
             <Button type='submit' isPrimary isDisabled={!(isFormValid.name && isFormValid.secName && isFormValid.patronym && isFormValid.email && isFormValid.password)}>
                 Зарегистрироваться

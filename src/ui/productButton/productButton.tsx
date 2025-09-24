@@ -1,29 +1,29 @@
 import clsx from "clsx";
 import styles from './productButton.module.css';
-import {useEffect, useState} from "react";
-import {AmountSetter} from "../amountSetter";
+import { useState } from "react";
 
 interface ButtonProps {
     buttonText?: string;
-    isPrimary?: boolean;
     onAdd?: () => void;
-    onRemove?: () => void;
+    onClick?: () => void;
 }
 
 export const ProductButton = ({
     buttonText = 'Добавить в корзину',
     onAdd = () => {},
-    onRemove = () => {},
+    onClick = () => {}
 }: ButtonProps) => {
     const [isInCart, setIsInCart] = useState<boolean>(false);
-    const [amount, setAmount] = useState<number>(0);
 
     const handleClick = () => {
         setIsInCart(true);
-        setAmount(1);
         onAdd();
+        onClick();
     }
 
+/*
+    ИЗ-ЗА ОГРАНИЧЕНИЙ API ВОЗМОЖНОСТИ ИСПОЛЬЗОВАНИЯ ВАРИАНТА С ПЕРЕКЛЮЧАТЕЛЕМ КОЛИЧЕСТВА НЕТУ =(
+    И вообще никаких приколов не придумать, не нравится
     const handleAdd = () => {
         setAmount(amount + 1);
         onAdd();
@@ -33,14 +33,9 @@ export const ProductButton = ({
         setAmount(amount - 1);
         onRemove();
     }
-
-    useEffect(() => {
-        if(amount === 0) setIsInCart(false);
-    }, [amount]);
-
     return (
         <>
-            {!isInCart ? (
+            { !isInCart ? (
                     <>
                         <button type='button' onClick={handleClick} className={clsx(styles.productButton)}>
                             {buttonText}
@@ -48,10 +43,21 @@ export const ProductButton = ({
                     </>
                 ) : (
                     <>
-                        <AmountSetter initialValue={amount} onAmountDown={handleRemove} onAmountUp={handleAdd} />
+                        <button type='button' onClick={handleClick} className={clsx(styles.productButton)}>
+                            {buttonText}
+                        </button>
+                             <AmountSetter initialValue={amount} onAmountDown={handleRemove} onAmountUp={handleAdd} />
+                        }
                     </>
                 )
             }
         </>
+    )
+*/
+
+    return (
+        <button type='button' onClick={handleClick} className={clsx(styles.productButton, isInCart && styles.disabled)} disabled={isInCart}>
+            { !isInCart ? buttonText : "Уже в корзине" }
+        </button>
     )
 }

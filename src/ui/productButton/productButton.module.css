@@ -23,3 +23,9 @@
 .productButton:active {
     opacity: 0.8;
 }
+
+.disabled {
+    cursor: not-allowed;
+    background-color: var(--disabled-button-background);
+    border-color: var(--disabled-border-color);
+}
