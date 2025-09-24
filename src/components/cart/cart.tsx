@@ -4,7 +4,8 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import type {TCartProduct, TProducts} from "../../utilities/types.ts";
 import { CartProduct } from "../../ui/cartProduct";
 import { getToken, isCurrentTokenExpired } from "../../utilities/token.ts";
-import { getCart, setProduct } from "../../utilities/api.ts";
+import {getCart, setProduct, submitOrder} from "../../utilities/api.ts";
+import {Button} from "../../ui/button";
 
 interface CartProps {
     close?: () => void;
@@ -15,6 +16,7 @@ export const Cart = ({
 }: CartProps) => {
     const cartWrap = useRef<HTMLDivElement | null>(null);
     const [cart, setCart] = useState<TCartProduct[]>([]);
+    const totalPrice = cart.reduce((sum, product) => sum + product.price, 0);
 
     const increaseProduct = useCallback((id: string) => {
         addProduct(id);
@@ -35,12 +37,12 @@ export const Cart = ({
         })
     }, []);
 
-    const decreaseProduct = useCallback((id: string) => {
-        removeProduct(id);
+    const decreaseProduct = useCallback((cart_id: string) => {
+        removeProduct(cart_id);
 
         setCart((cart) => {
             return cart.map(prod => {
-                if(prod.id === id && prod.amount > 1) {
+                if(prod.cart_id[0] === cart_id && prod.amount > 1) {
                     const newAmount = prod.amount - 1;
 
                     return {
@@ -54,20 +56,19 @@ export const Cart = ({
         })
     }, []);
 
-    const deleteProduct = useCallback((id: string) => {
-        console.log(id);
-        const product = cart.filter()
-
+    const deleteProduct = (cart_id: string) => {
+        const product = cart.filter(prod => prod.cart_id[0] === cart_id)[0];
+        console.log(cart);
         if (product) {
-            for (let i = 0; i < product.amount; i++) {
+            product.cart_id.forEach(id => {
                 removeProduct(id);
-            }
+            })
         }
 
         setCart((cart) => {
-            return cart.filter(prod => prod.id !== id);
+            return cart.filter(prod => prod.cart_id[0] !== cart_id);
         })
-    }, []);
+    };
 
     const products = cart.map(prod => {
        return <CartProduct decreaseProduct={decreaseProduct} increaseProduct={increaseProduct} deleteProduct={deleteProduct} product={prod} key={prod.id} />
@@ -94,16 +95,17 @@ export const Cart = ({
                             const existingProduct = grouped[existingProductIndex];
                             existingProduct.amount += 1;
                             existingProduct.totalPrice = existingProduct.price * existingProduct.amount;
+                            existingProduct.cart_id.push(product.id);
                         } else {
                             grouped.push({
                                 id: product.product_id,
                                 name: product.name,
                                 description: product.description,
                                 image: product.image,
-                                price: product.price,
+                                price: Number(product.price),
                                 amount: 1,
                                 totalPrice: product.price,
-                                cart_id: product.id
+                                cart_id: [product.id]
                             });
                         }
 
@@ -118,14 +120,20 @@ export const Cart = ({
     const removeProduct = (id: string) => {
         if(!isCurrentTokenExpired()) {
             const token = getToken()!.value;
-            setProduct(id, token, 'DELETE');
+            setProduct(id, token, 'DELETE')
+                .then(() => {
+                    actualizeProducts();
+                })
         }
     }
 
     const addProduct = (id: string) => {
         if(!isCurrentTokenExpired()) {
             const token = getToken()!.value;
-            setProduct(id, token, 'POST');
+            setProduct(id, token, 'POST')
+                .then(() => {
+                    actualizeProducts();
+                })
         }
     }
 
@@ -138,6 +146,16 @@ export const Cart = ({
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [])
 
+    const handleSubmit = () => {
+        if(!isCurrentTokenExpired()) {
+            const token = getToken()!.value;
+            submitOrder(token)
+                .then(() => {
+                    actualizeProducts();
+                })
+        }
+    }
+
     return (
         <div className={clsx(styles.cartWrapper)} ref={cartWrap}>
             <div className={clsx(styles.cartOverlay)} onClick={handleClose}></div>
@@ -148,9 +166,15 @@ export const Cart = ({
                     {!products.length ? (
                         <span className={clsx(styles.cartText)}>Корзина пуста</span>
                     ) : (
-                        <div className={clsx(styles.productContainer)}>
-                            {products}
-                        </div>
+                        <>
+                            <div className={clsx(styles.productContainer)}>
+                                {products}
+                            </div>
+                            <div className={clsx(styles.cartSubmitContainer)}>
+                                <h4 className={clsx(styles.cartTotal)}>Итого: {totalPrice} р.</h4>
+                                <Button onClick={handleSubmit} isPrimary>Оформить заказ</Button>
+                            </div>
+                        </>
                     )}
                 </div>
             </div>

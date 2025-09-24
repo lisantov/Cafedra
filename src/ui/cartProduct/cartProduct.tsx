@@ -8,9 +8,9 @@ import type {SyntheticEvent} from "react";
 
 interface ProductProps {
     product: TCartProduct;
-    deleteProduct: (id: string) => void;
+    deleteProduct: (cart_id: string) => void;
     increaseProduct: (id: string) => void;
-    decreaseProduct: (id: string) => void;
+    decreaseProduct: (cart_id: string) => void;
 }
 
 export const CartProduct = ({
@@ -23,7 +23,8 @@ export const CartProduct = ({
 
     const handleDelete = (e: SyntheticEvent) => {
         e.stopPropagation();
-        deleteProduct(cart_id);
+        deleteProduct(cart_id[0]);
+        cart_id.shift();
     }
 
     const increase = (e: SyntheticEvent) => {
@@ -33,7 +34,7 @@ export const CartProduct = ({
 
     const decrease = (e: SyntheticEvent) => {
         e.stopPropagation();
-        decreaseProduct(cart_id);
+        decreaseProduct(cart_id[0]);
     }
 
     return (

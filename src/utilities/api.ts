@@ -95,3 +95,17 @@ export const getCart = (userToken: string): Promise<TProducts> => {
             console.error(`${error.code}: ${error.message}`);
         })
 }
+
+export const submitOrder = (userToken: string): Promise<TSuccessMessage> => {
+    return fetch(`${serverUrl}/order`, {
+        headers: {
+            'Authorization': `Bearer ${userToken}`
+        }
+    })
+        .then((response) => {
+            if(response.ok) return response.json();
+        })
+        .catch((error: TError) => {
+            console.error(`${error.code}: ${error.message}`);
+        })
+}

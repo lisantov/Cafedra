@@ -52,7 +52,7 @@
 
 .cart {
     position: relative;
-    padding: 25px;
+    padding: 25px 25px 60px;
     width: 30%;
     height: 100%;
     float: right;
@@ -109,9 +109,10 @@
 
 .cartContainer {
     display: flex;
+    flex-direction: column;
     height: 90%;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
 }
 
 .cartText {
@@ -145,4 +146,18 @@
 .productContainer::-webkit-scrollbar-thumb {
     background-color: var(--accent-color);
     border-radius: var(--border-radius);
+}
+
+.cartSubmitContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cartTotal {
+    font-family: var(--font);
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: var(--regular-weight);
 }

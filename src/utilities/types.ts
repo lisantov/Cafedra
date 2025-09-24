@@ -49,5 +49,5 @@ export type TStoredToken = {
 export type TCartProduct = TProduct & {
     amount: number;
     totalPrice: number;
-    cart_id: string;
+    cart_id: string[];
 }
