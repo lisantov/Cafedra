@@ -20,8 +20,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
     args: {
-        productTitle: 'Жизненно важная вещь!',
-        productDescription: 'Что бы вы делали, если бы не эта штука! Да как без неё можно жить?',
-        productPrice: 9999,
+        product: {
+            id: '1',
+            name: 'Продукт',
+            image: 'img/iStock-1158470655.jpg',
+            description: 'Лучший продукт',
+            price: 1000,
+            amount: 2,
+            totalPrice: 2000,
+            cart_id: ['1'],
+        },
+        deleteProduct: (v) => {console.log(v)},
+        increaseProduct: (v) => {console.log(v)},
+        decreaseProduct: (v) => {console.log(v)}
     }
 }

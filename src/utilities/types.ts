@@ -25,6 +25,10 @@ export type TProducts = {
     data: TCartAnswerProduct[];
 }
 
+export type TGetProducts = {
+    data: TProduct[]
+}
+
 export type TSuccessMessage = {
     message: string;
 }
@@ -50,4 +54,18 @@ export type TCartProduct = TProduct & {
     amount: number;
     totalPrice: number;
     cart_id: string[];
+}
+
+export type TOrder = {
+    id: string,
+    products: string[],
+    order_price: number
+}
+
+export type TOrders = {
+    data: TOrder[]
+}
+
+export type TOrderProduct = TProduct & {
+    amount: number;
 }

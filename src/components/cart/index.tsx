@@ -1,1 +1,1 @@
-import { Cart } from './cart.tsx';
+export { Cart } from './cart.tsx';

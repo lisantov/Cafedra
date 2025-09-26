@@ -1,6 +1,6 @@
 import styles from './catalog.module.css';
 
-import type {ReactNode} from "react";
+import type { ReactNode } from "react";
 
 interface HeaderProps {
     children: ReactNode;

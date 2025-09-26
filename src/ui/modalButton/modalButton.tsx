@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import styles from './modalButton.module.css';
-import { type ReactNode, useState} from "react";
+import { type ReactNode } from "react";
 import ReactDOM from "react-dom";
 
 interface ButtonProps {

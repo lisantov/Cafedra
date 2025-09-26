@@ -19,7 +19,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-    args: {},
+    args: {
+        onLogin: () => {}
+    },
     parameters: {
         backgrounds: {
             default: 'dark',

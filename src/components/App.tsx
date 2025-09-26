@@ -10,13 +10,14 @@ import { Product } from "../ui/product";
 import { ProductButton } from "../ui/productButton";
 import { Logo } from '../ui/logo';
 
-import type { TError, TProduct, TProducts, } from "../utilities/types.ts";
+import type { TGetProducts, TProduct } from "../utilities/types.ts";
 import { useEffect, useState } from "react";
 import { getToken, isCurrentTokenExpired, removeToken } from "../utilities/token.ts";
 import { getProducts, logout, setProduct } from "../utilities/api.ts";
 import { hostName } from "../utilities/constants.ts";
 import { ModalButton } from "../ui/modalButton";
-import { Cart } from "./cart/cart.tsx";
+import { Cart } from "./cart";
+import { Orders } from "./orders";
 
 function App() {
     const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -24,6 +25,7 @@ function App() {
     const [isLogging, setIsLogging] = useState<boolean>(false);
     const [products, setProducts] = useState<TProduct[]>([]);
     const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+    const [isOrdersOpen, setIsOrdersOpen] = useState<boolean>(false);
 
     const handleProductButton = (id: string, method: 'POST' | 'DELETE') => () => {
         if(!isCurrentTokenExpired()) {
@@ -53,26 +55,32 @@ function App() {
     const handleLogo = () => {
         if(isRegistering) setIsRegistering(false);
         if(isLogging) setIsLogging(false);
+        if(isOrdersOpen) setIsOrdersOpen(false);
+    }
+
+    const handleOrdersButton = () => {
+        if(isRegistering) setIsRegistering(false);
+        if(isLogging) setIsLogging(false);
+        if(!isOrdersOpen) setIsOrdersOpen(true);
     }
 
     const handleRegistrationButton = () => {
         if(isLogging) setIsLogging(false);
+        if(isOrdersOpen) setIsOrdersOpen(false);
         if(!isRegistering) setIsRegistering(true);
     }
 
     const handleLoginButton = () => {
         if(isRegistering) setIsRegistering(false);
+        if(isOrdersOpen) setIsOrdersOpen(false);
         if(!isLogging) setIsLogging(true);
     }
 
     useEffect(() => {
         getProducts()
-            .then((data: TProducts) => {
+            .then((data: TGetProducts) => {
                 setProducts(data.data);
             })
-            .catch((error: TError) => {
-                console.error(`${error.code}: ${error.message}`);
-            });
         if(!isCurrentTokenExpired()) {
             setIsLogged(true);
         }
@@ -95,6 +103,9 @@ function App() {
                 .then(() => {
                     removeToken();
                     setIsLogged(false);
+                    if(isRegistering) setIsRegistering(false);
+                    if(isLogging) setIsLogging(false);
+                    if(isOrdersOpen) setIsOrdersOpen(false);
                 })
         }
     }
@@ -104,7 +115,7 @@ function App() {
         <Header logo={<Logo onClick={handleLogo} />}>
             {isLogged ? (
                 <>
-                    <Button isPrimary >Оформленные заказы</Button>
+                    <Button onClick={handleOrdersButton} isPrimary >Оформленные заказы</Button>
                     <ModalButton setIsOpen={setIsCartOpen} isOpen={isCartOpen} modalRootId='react-modals' buttonText='Корзина' isPrimary>
                         <Cart close={() => setIsCartOpen(false)} />
                     </ModalButton>
@@ -127,6 +138,11 @@ function App() {
                 <>
                     <Title>Вход в аккаунт</Title>
                     <Login onLogin={handleLogin} />
+                </>
+            ) : isOrdersOpen ? (
+                <>
+                    <Title>Оформленные заказы</Title>
+                    <Orders />
                 </>
             ) : (
                 <Catalog>

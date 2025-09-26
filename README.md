@@ -1,69 +1,103 @@
-# React + TypeScript + Vite
+# Проект "Просто купить"
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Проект сделан в рамках тестового задания для направления Фронтенд в кафедру ТТИТ.  
+Проект выполнил: Тюрин Никита Олегович (@lisantov)
 
-Currently, two official plugins are available:
+## Стек технологий
+   - React
+   - Vite
+   - TS
+   - ESLint
+   - Prettier
+   - Stylelint
+   - CSS
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Инструкция по запуску
 
-## Expanding the ESLint configuration
+### Шаг первый: 
+**Скачать и распаковать архив проекта в удобном для вас месте**  
+(по хорошему путь к проекту не должен содержать кириллицы)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Шаг второй:
+**Открыть проект в удобном для вас IDE или перейти в папку проекта в bash**  
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Шаг третий:
+**Написать следующую команду в терминал для установки зависимостей**  
+После чего дождаться полной установки пакетов
+```bash
+  npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Шаг четвёртый:
+**Команда для запуска проекта:**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Запуск проекта в dev-моде на локальном хосте
+```bash    
+  npm run dev
 ```
+> Если при запуске проекта контент страницы не прогружается, а в консоли высвечивается ошибка формата 
+> ```
+> 'Access to fetch at ***** from origin 'http://localhost:5173' 
+> has been blocked by CORS policy: No 'Access-Control-Allow-Origin' 
+> header is present on the requested resource.'
+> ```
+> То вам следует установить расширение для браузера [Cross Domain - CORS](https://chromewebstore.google.com/detail/cross-domain-cors/mjhpgnbimicffchbodmgfnemoghjakai)
+
+## Полный список всех команд:
+- Запуск проекта в dev-моде на локальном хосте
+```bash    
+  npm run dev
+```
+-------------------
+- Создание билда prod версии проекта в папке dist
+```bash    
+  npm run build
+```
+-------------------
+- Запуск ESLint для форматирования проекта
+```bash    
+  npm run lint
+```
+-------------------
+- Запуск Stylelint для поиска ошибок в файлах стиля
+```bash    
+  npm run stylelint
+```
+-------------------
+- Запуск Stylelint для исправления ошибок в файлах стиля
+```bash    
+  npm run stylelint:fix
+```
+-------------------
+- Запуск всех форматеров и линтеров для поиска устранения ошибок стилизации и форматирования
+```bash    
+  npm run format
+```
+-------------------
+- Запуск Prettier для поиска устранения ошибок стилизации и форматирования
+```bash    
+  npm run format
+```
+-------------------
+- Запуск всех форматеров и линтеров для поиска устранения ошибок стилизации и форматирования
+```bash    
+  npm run check
+```
+-------------------
+- Запуск prod билда проекта из папки dist в браузере на локальном сервере
+```bash    
+  npm run preview
+```
+-------------------
+- Запуск storybook для просмотра UI компонентов
+
+```bash    
+  npm run storybook
+```
+-------------------
+- Создание статического билда storybook для просмотра UI компонентов
+
+```bash    
+  npm run build-storybook
+```
+

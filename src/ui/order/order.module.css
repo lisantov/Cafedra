@@ -1,0 +1,33 @@
+.order {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 180px;
+    padding: 0.6rem;
+    background-color: var(--header-color);
+    border-radius: var(--border-radius);
+}
+
+.productsContainer {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.orderInfo {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.orderSpan {
+    color: var(--text-color);
+    font-weight: var(--light-weight);
+    font-size: 1rem;
+    font-family: var(--font);
+}

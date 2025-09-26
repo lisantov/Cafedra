@@ -3,11 +3,11 @@ import type {
     TLoginData,
     TSuccessMessage,
     TProducts,
-    TError
+    TError, TGetProducts
 } from "./types.ts";
 import { serverUrl } from "./constants.ts";
 
-export const getProducts = (): Promise<TProducts> => {
+export const getProducts = (): Promise<TGetProducts> => {
     return fetch(`${serverUrl}/products`, {
         method: 'GET',
     })
@@ -87,7 +87,8 @@ export const submitOrder = (userToken: string): Promise<TSuccessMessage> => {
     return fetch(`${serverUrl}/order`, {
         headers: {
             'Authorization': `Bearer ${userToken}`
-        }
+        },
+        method: 'POST'
     })
         .then((response) => {
             if(response.ok) return response.json();
@@ -95,4 +96,12 @@ export const submitOrder = (userToken: string): Promise<TSuccessMessage> => {
         .catch((error: TError) => {
             console.error(`${error.code}: ${error.message}`);
         })
+}
+
+export const getOrders = (userToken: string): Promise<Response> => {
+    return fetch(`${serverUrl}/order`, {
+        headers: {
+            'Authorization': `Bearer ${userToken}`
+        }
+    })
 }
