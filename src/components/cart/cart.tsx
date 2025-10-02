@@ -16,7 +16,7 @@ export const Cart = ({
 }: CartProps) => {
     const cartWrap = useRef<HTMLDivElement | null>(null);
     const [cart, setCart] = useState<TCartProduct[]>([]);
-    const totalPrice = cart.reduce((sum, product) => sum + product.price, 0);
+    const totalPrice = cart.reduce((sum, product) => sum + product.totalPrice, 0);
 
     const increaseProduct = useCallback((id: string) => {
         addProduct(id);
